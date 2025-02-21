@@ -1,3 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
+using ResourceBookingSystem.Server.Models;
+using System.Reflection.Metadata;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
