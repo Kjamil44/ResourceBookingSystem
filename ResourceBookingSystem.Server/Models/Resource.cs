@@ -13,7 +13,6 @@ namespace ResourceBookingSystem.Server.Models
         [Required]
         public int Quantity { get; set; }
 
-        // Navigation property
         public List<Booking> Bookings { get; set; } = new List<Booking>();
     }
 }

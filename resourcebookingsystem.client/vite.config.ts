@@ -31,7 +31,7 @@ if (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {
 }
 
 const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}` :
-    env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : 'https://localhost:7102';
+    env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : 'https://localhost:44347';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -43,7 +43,11 @@ export default defineConfig({
     },
     server: {
         proxy: {
-            '^/weatherforecast': {
+            '^/api/resources': { // Add this entry for your API
+                target,
+                secure: false
+            },
+            '^/api/bookings': { // If you also need to send bookings to the backend
                 target,
                 secure: false
             }
@@ -54,4 +58,5 @@ export default defineConfig({
             cert: fs.readFileSync(certFilePath),
         }
     }
+    
 })

@@ -9,10 +9,10 @@ namespace ResourceBookingSystem.Server.Models
         public int Id { get; set; }
 
         [Required]
-        public int ResourceId { get; set; } // Foreign key
+        public int ResourceId { get; set; }
 
         [ForeignKey("ResourceId")]
-        public Resource Resource { get; set; } // Navigation property
+        public Resource Resource { get; set; }
 
         [Required]
         public DateTime DateFrom { get; set; }
