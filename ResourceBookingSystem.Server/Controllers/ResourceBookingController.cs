@@ -8,14 +8,9 @@ namespace ResourceBookingSystem.Server.Controllers
     [Route("api/resources")]
     public class ResourceBookingController : ControllerBase
     {
-        private readonly ILogger<ResourceBookingController> _logger;
         private readonly IBookingService _bookingService;
 
-        public ResourceBookingController(ILogger<ResourceBookingController> logger, IBookingService bookingService)
-        {
-            _logger = logger;
-            _bookingService = bookingService;
-        }
+        public ResourceBookingController(IBookingService bookingService) => _bookingService = bookingService;
 
         [HttpGet]
         public async Task<IActionResult> GetAllResources()
@@ -27,18 +22,14 @@ namespace ResourceBookingSystem.Server.Controllers
         [HttpPost("{resourceId}/bookings")]
         public async Task<IActionResult> BookResource([FromRoute] int resourceId, [FromBody] BookingRequestDto bookingRequest)
         {
-            if (bookingRequest.DateFrom > bookingRequest.DateTo)
+            var (IsValid, Message) = await _bookingService.ValidateBookingRequest(resourceId, bookingRequest);
+            if (!IsValid)
             {
-                return BadRequest(new { message = "The start date cannot be later than the end date. Please select a valid date range." });
-            }
-
-            var isAvailable = await _bookingService.IsBookingAvailable(resourceId, bookingRequest.DateFrom, bookingRequest.DateTo, bookingRequest.BookedQuantity);
-            if (!isAvailable)
-            {
-                return BadRequest(new { message = "Resource not available for the selected time range." });
+                return BadRequest(new { message = Message });
             }
 
             await _bookingService.BookResource(resourceId, bookingRequest);
+
             return Ok(new { message = "Booking successful!" });
         }
     }

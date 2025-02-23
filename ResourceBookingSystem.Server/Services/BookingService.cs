@@ -45,5 +45,21 @@ namespace ResourceBookingSystem.Server.Services
 
             return (totalAvailable - totalBooked) >= requestedQuantity;
         }
+
+        public async Task<(bool IsValid, string Message)> ValidateBookingRequest(int resourceId, BookingRequestDto bookingRequest)
+        {
+            if (bookingRequest.DateFrom > bookingRequest.DateTo)
+            {
+                return (false, "The start date cannot be later than the end date. Please select a valid date range.");
+            }
+
+            bool isAvailable = await IsBookingAvailable(resourceId, bookingRequest.DateFrom, bookingRequest.DateTo, bookingRequest.BookedQuantity);
+            if (!isAvailable)
+            {
+                return (false, "Resource not available for the selected time range.");
+            }
+
+            return (true, string.Empty);
+        }
     }
 }
