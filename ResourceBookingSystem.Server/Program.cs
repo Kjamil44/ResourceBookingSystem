@@ -1,10 +1,14 @@
-using ResourceBookingSystem.Server.Services.Resources;
+using ResourceBookingSystem.Server.Repository;
+using ResourceBookingSystem.Server.Services;
+using ResourceBookingSystem.Server.Services.Email;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddScoped<IResourceBookingService, ResourceBookingService>();
+builder.Services.AddScoped<IResourceBookingRepository, ResourceBookingRepository>();
+builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -10,7 +10,7 @@ interface Resource {
 interface BookingFormData {
     dateFrom: string;
     dateTo: string;
-    quantity: number;
+    bookedQuantity: number;
 }
 
 function App() {
@@ -20,7 +20,7 @@ function App() {
     const [bookingData, setBookingData] = useState<BookingFormData>({
         dateFrom: '',
         dateTo: '',
-        quantity: 1
+        bookedQuantity: 1
     });
 
     useEffect(() => {
@@ -45,6 +45,7 @@ function App() {
     function handleCloseDialog() {
         setOpenDialog(false);
         setSelectedResource(null);
+        clearForm();
     }
 
     function handleBookingChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -56,22 +57,33 @@ function App() {
 
     async function handleBook() {
         if (!selectedResource) return;
-        const booking = { ...bookingData, resourceId: selectedResource.id };
+
         try {
-            const response = await fetch('/bookings', {
+            const response = await fetch(`/api/resources/${selectedResource.id}/bookings`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(booking)
+                body: JSON.stringify(bookingData)
             });
+
+            const result = await response.json(); 
+
             if (response.ok) {
-                alert("Booking successful!");
+                alert(result.message);
                 handleCloseDialog();
             } else {
-                alert("Booking failed. Please try again.");
+                alert(result.message || "Booking failed. Please try again.");
             }
-        } catch (error) {
-            console.error("Error submitting booking:", error);
+        } catch (error: any) {
+            alert("An unexpected error occurred: " + error.message);
         }
+    }
+
+    function clearForm() {
+        setBookingData({
+            dateFrom: '',
+            dateTo: '',
+            bookedQuantity: 1
+        });
     }
 
     return (
@@ -99,14 +111,18 @@ function App() {
             <Dialog open={openDialog} onClose={handleCloseDialog}>
                 <div className="dialog-content">
                     <h2>Book {selectedResource?.name}</h2>
-                    <label>Date From:</label>
-                    <input type="datetime-local" name="dateFrom" value={bookingData.dateFrom} onChange={handleBookingChange} />
-                    <label>Date To:</label>
-                    <input type="datetime-local" name="dateTo" value={bookingData.dateTo} onChange={handleBookingChange} />
-                    <label>Quantity:</label>
-                    <input type="number" name="quantity" value={bookingData.quantity} onChange={handleBookingChange} min={1} />
-                    <button onClick={handleBook}>Book</button>
-                    <button onClick={handleCloseDialog}>Cancel</button>
+                    <div className="form-container">
+                        <label>Date From:</label>
+                        <input type="datetime-local" name="dateFrom" value={bookingData.dateFrom} onChange={handleBookingChange} />
+                        <label>Date To:</label>
+                        <input type="datetime-local" name="dateTo" value={bookingData.dateTo} onChange={handleBookingChange} />
+                        <label>Quantity:</label>
+                        <input type="number" name="bookedQuantity" value={bookingData.bookedQuantity} onChange={handleBookingChange} min={1} />
+                    </div>
+                    <div className="button-group">
+                        <button onClick={handleBook}>Book</button>
+                        <button onClick={handleCloseDialog}>Cancel</button>
+                    </div>
                 </div>
             </Dialog>
         </div>

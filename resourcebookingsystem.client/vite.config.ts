@@ -43,14 +43,10 @@ export default defineConfig({
     },
     server: {
         proxy: {
-            '^/api/resources': { // Add this entry for your API
+            '^/api/resources': {
                 target,
                 secure: false
             },
-            '^/api/bookings': { // If you also need to send bookings to the backend
-                target,
-                secure: false
-            }
         },
         port: 5173,
         https: {
